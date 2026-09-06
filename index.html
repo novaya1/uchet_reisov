@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#245b45" />
+  <title>Учёт рейсов</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Личный журнал водителя</div>
+        <h1>Учёт рейсов</h1>
+      </div>
+      <button id="addTripTop" class="icon-btn" aria-label="Добавить рейс">＋</button>
+    </header>
+
+    <main>
+      <section id="homeView" class="view active">
+        <div class="summary-grid">
+          <div class="summary-card"><span>Рейсов</span><strong id="sumTrips">0</strong></div>
+          <div class="summary-card"><span>Доход</span><strong id="sumIncome">0 ₽</strong></div>
+          <div class="summary-card"><span>Расходы</span><strong id="sumExpenses">0 ₽</strong></div>
+          <div class="summary-card accent"><span>Чистыми</span><strong id="sumNet">0 ₽</strong></div>
+        </div>
+
+        <button id="addTripMain" class="primary-btn">＋ Новый рейс</button>
+
+        <div class="section-head">
+          <h2>Мои рейсы</h2>
+          <input id="searchInput" class="search" placeholder="Поиск по маршруту" />
+        </div>
+
+        <div id="tripList" class="trip-list"></div>
+        <div id="emptyState" class="empty-state">
+          <div class="truck">🚛</div>
+          <h3>Рейсов пока нет</h3>
+          <p>Нажмите «Новый рейс» и добавьте первый маршрут.</p>
+        </div>
+      </section>
+
+      <section id="editView" class="view">
+        <button id="backBtn" class="back-btn">← Назад к рейсам</button>
+        <div class="editor-head">
+          <div>
+            <div class="eyebrow">Карточка рейса</div>
+            <h2 id="editorTitle">Новый рейс</h2>
+          </div>
+          <span id="statusBadge" class="status-badge">В рейсе</span>
+        </div>
+
+        <form id="tripForm">
+          <div class="panel">
+            <h3>Основное</h3>
+            <div class="form-grid">
+              <label>Название рейса<input id="name" placeholder="Например, Уфа — Москва" /></label>
+              <label>Статус<select id="status"><option value="В рейсе">В рейсе</option><option value="Завершён">Завершён</option></select></label>
+              <label>Откуда<input id="from" placeholder="Уфа" /></label>
+              <label>Куда<input id="to" placeholder="Москва" /></label>
+              <label>Дата выезда<input id="dateOut" type="date" /></label>
+              <label>Дата приезда<input id="dateIn" type="date" /></label>
+              <label>Ставка, ₽<input id="rate" type="number" inputmode="decimal" placeholder="0" /></label>
+              <label>Доплата / бонус, ₽<input id="bonus" type="number" inputmode="decimal" placeholder="0" /></label>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Расходы</h3>
+            <div class="form-grid">
+              <label>Топливо, ₽<input id="fuel" type="number" inputmode="decimal" placeholder="0" /></label>
+              <label>Платные дороги, ₽<input id="roads" type="number" inputmode="decimal" placeholder="0" /></label>
+              <label>Стоянка, ₽<input id="parking" type="number" inputmode="decimal" placeholder="0" /></label>
+              <label>Ремонт / сервис, ₽<input id="repair" type="number" inputmode="decimal" placeholder="0" /></label>
+              <label>Прочие расходы, ₽<input id="other" type="number" inputmode="decimal" placeholder="0" /></label>
+            </div>
+            <div class="totals">
+              <div><span>Всего расходов</span><strong id="expensesPreview">0 ₽</strong></div>
+              <div><span>Сумма за рейс</span><strong id="incomePreview">0 ₽</strong></div>
+              <div class="net"><span>Чистыми</span><strong id="netPreview">0 ₽</strong></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Заметки</h3>
+            <textarea id="notes" placeholder="Номер груза, контакты, пометки, что нужно запомнить..."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn">Сохранить рейс</button>
+            <button type="button" id="deleteBtn" class="danger-btn hidden">Удалить рейс</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
