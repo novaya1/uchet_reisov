@@ -5,14 +5,94 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="theme-color" content="#070a0d" />
 <title>Мои рейсы</title>
-<link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{
+  --bg:#07090c;--bg2:#0b0f13;--panel:#11171c;--panel2:#0c1115;--line:#263039;
+  --text:#f6f4ef;--muted:#9aa4ad;--gold:#e1b36c;--gold2:#b47b35;--gold3:#7b4d1c;
+  --green:#5cf08b;--danger:#ff7373;--shadow:0 18px 42px rgba(0,0,0,.38)
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#020304;color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+/* Более выразительный шрифт для всех кнопок */
+button,.nav,.add,.save,.delete,.secondary,.month-arrow,.iconround,.more,.back{font-family:"Arial Narrow","Roboto Condensed","Segoe UI",Arial,sans-serif;font-weight:800;letter-spacing:.045em}
+.add,.save,.delete,.secondary{text-transform:uppercase;letter-spacing:.075em}
+.app{max-width:980px;min-height:100vh;margin:0 auto;background:linear-gradient(180deg,#081017 0%,#07090c 42%,#050607 100%);position:relative;overflow:hidden}
+.hero{position:relative;min-height:420px;padding:28px 34px 24px;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;background:
+linear-gradient(90deg,rgba(4,7,10,.97) 0%,rgba(4,7,10,.88) 30%,rgba(4,7,10,.42) 54%,rgba(4,7,10,.08) 76%),
+linear-gradient(180deg,rgba(3,6,9,.03) 58%,#07090c 98%),
+url('assets/daf-truck.jpg') 72% 42%/cover no-repeat;filter:saturate(.92) contrast(1.08) brightness(.95)}
+.hero:after{content:"";position:absolute;inset:auto 0 0 0;height:90px;background:linear-gradient(180deg,transparent,#07090c)}
+.topbar,.hero-grid{position:relative;z-index:2}.topbar{display:flex;justify-content:space-between;align-items:center}
+.iconround{width:48px;height:48px;border:0;border-radius:16px;background:rgba(8,12,15,.28);color:var(--gold);font-size:27px;backdrop-filter:blur(10px)}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;align-items:end;min-height:330px}
+.brand{align-self:center;max-width:420px}.brand h1{margin:0;font-size:64px;line-height:.86;letter-spacing:-.045em;font-weight:950;text-transform:uppercase;text-shadow:0 8px 30px rgba(0,0,0,.35)}
+.brand h1 .white{display:block;background:linear-gradient(#fff,#b9c0c4);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand h1 .gold{display:block;background:linear-gradient(180deg,#f3d39a 0%,#d79f50 55%,#9f6227 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .tag{margin-top:22px;color:#c9cfd3;font-size:16px;line-height:1.55;letter-spacing:.24em;text-transform:uppercase}
+.quote{justify-self:end;align-self:center;margin-top:130px;width:190px;color:#e1e4e7;font-size:13px;line-height:1.65;letter-spacing:.16em;text-transform:uppercase;text-shadow:0 2px 14px #000}
+.dashboard{position:relative;z-index:3;padding:0 26px 116px;margin-top:-18px}
+.monthbar{display:flex;gap:12px;align-items:center;margin:0 0 18px;max-width:410px}.monthbtn{flex:1;border:1px solid #4a3b2d;background:linear-gradient(180deg,#171b20,#0e1216);border-radius:20px;padding:0 16px;height:62px;box-shadow:0 12px 30px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.03)}
+.monthbtn select{width:100%;height:100%;border:0;outline:none;background:transparent;color:var(--text);font-size:20px;font-weight:800}.monthbtn select option{background:#11161a;color:#fff}
+.month-arrow{width:58px;height:58px;border:1px solid #374049;background:linear-gradient(180deg,#151b20,#0c1014);color:var(--gold);border-radius:18px;font-size:30px;box-shadow:var(--shadow)}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}.stat{min-height:112px;background:linear-gradient(145deg,#151b20,#0b0f12);border:1px solid #252e36;border-radius:20px;padding:18px;box-shadow:0 12px 28px rgba(0,0,0,.32);display:flex;flex-direction:column;justify-content:center}.stat .icon{font-size:27px;color:var(--gold);margin-bottom:10px}.stat b{font-size:25px;line-height:1}.stat span{margin-top:8px;color:#c3c8cc;font-size:13px}.stat.green b{color:var(--green)}
+.trip-list{display:flex;flex-direction:column;gap:12px}.trip{background:linear-gradient(145deg,#12181d,#0a0e12);border:1px solid #242d34;border-radius:20px;box-shadow:0 12px 30px rgba(0,0,0,.3);padding:0;overflow:hidden;transition:.18s ease}.trip:active{transform:scale(.994)}
+.trip-row{display:grid;grid-template-columns:160px minmax(210px,1.6fr) 120px 140px 150px 58px;align-items:stretch}.cell{padding:17px 16px;border-right:1px solid #222a31;display:flex;flex-direction:column;justify-content:center;min-width:0}.cell:last-child{border-right:0}.trip-no{font-size:19px;color:var(--gold);font-weight:900}.date{margin-top:8px;color:#e9edf0;font-size:13px}.route{font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.route-sub{color:var(--muted);font-size:12px;margin-top:8px}.metric-label{color:var(--gold);font-size:17px;margin-bottom:8px}.metric{font-size:16px;font-weight:800}.payment .metric{color:var(--green);font-size:18px}.more-wrap{display:flex;align-items:center;justify-content:center}.more{width:42px;height:42px;border-radius:13px;border:1px solid #72512a;background:linear-gradient(180deg,#2a2118,#121518);color:#f1c67d;font-size:27px}
+.empty{padding:52px 20px;text-align:center;color:var(--muted);border:1px dashed #283139;border-radius:20px;background:#0b0f12}
+.add{width:100%;margin-top:20px;border:1px solid #ffd593;border-radius:22px;padding:18px 20px;font-size:22px;font-weight:900;color:#15100a;background:linear-gradient(180deg,#f4d08d 0%,#d79b4c 55%,#b9782d 100%);box-shadow:0 16px 40px rgba(189,126,43,.28),inset 0 1px 0 rgba(255,255,255,.46)}
+.footer-quote{margin:28px 4px 0;padding-top:26px;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;gap:20px;color:#9aa3aa;font-size:11px;letter-spacing:.24em;text-transform:uppercase;line-height:1.5}
+.bottom{position:fixed;z-index:30;bottom:0;left:50%;transform:translateX(-50%);width:min(980px,100%);display:grid;grid-template-columns:repeat(4,1fr);background:rgba(6,9,12,.94);backdrop-filter:blur(18px);border-top:1px solid #202931;padding:10px 10px calc(10px + env(safe-area-inset-bottom))}.nav{border:0;background:transparent;color:#8e989f;padding:8px 4px;font-size:12px}.nav b{display:block;font-size:24px;margin-bottom:4px}.nav.active{color:var(--gold)}
+.view{display:none}.view.active{display:block}
+.inner{padding:22px 18px 120px}.topline{display:flex;align-items:center;gap:12px;margin-bottom:18px}.topline h2{margin:0;font-size:25px}.back{width:44px;height:44px;border-radius:14px;border:1px solid #343e46;background:#11171b;color:#fff;font-size:22px}.form-card,.settings-card{background:linear-gradient(145deg,#141a1f,#0c1014);border:1px solid #29323a;border-radius:22px;padding:18px;box-shadow:var(--shadow)}.field{margin-bottom:14px}.field label{display:block;color:#b0b8be;font-size:13px;margin-bottom:7px}.field input{width:100%;border:1px solid #343f48;border-radius:14px;padding:14px;background:#080b0e;color:#fff;outline:none}.field input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(225,179,108,.11)}.actions{display:grid;grid-template-columns:1fr auto;gap:10px}.save,.delete,.secondary{border-radius:15px;padding:14px 16px;font-weight:900}.save{border:1px solid #f4d08d;background:linear-gradient(180deg,#f1cd89,#c78938);color:#111}.delete{border:1px solid #61262c;background:#2b1215;color:#ff999f}.note{color:var(--muted);font-size:12px;line-height:1.55}.settings-card{margin-bottom:12px}.settings-card h3{margin:0 0 7px}.settings-card p{margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.45}.secondary{border:1px solid #3a454e;background:#171d22;color:#fff}.secondary.danger{border-color:#63282c;color:#ff9a9a;background:#281214}.chartline{display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #20272d}.chartline:last-child{border-bottom:0}.chartline span{color:var(--muted)}.chartline b.income{color:var(--green)}
+@media(max-width:820px){.hero{min-height:365px;padding:22px 20px 20px}.hero:before{background-position:64% 40%}.brand h1{font-size:54px}.hero-grid{grid-template-columns:1fr 1fr;min-height:285px}.quote{font-size:11px;width:150px;margin-top:115px}.dashboard{padding:0 14px 110px}.summary{grid-template-columns:repeat(2,1fr)}.trip-row{grid-template-columns:120px minmax(180px,1.4fr) 90px 110px 120px 52px}.cell{padding:14px 10px}.route{font-size:15px}.metric{font-size:14px}.payment .metric{font-size:15px}}
+@media(max-width:610px){.hero{min-height:330px}.hero:before{background:linear-gradient(90deg,rgba(4,7,10,.98) 0%,rgba(4,7,10,.75) 46%,rgba(4,7,10,.18) 80%),linear-gradient(180deg,rgba(3,6,9,.02) 58%,#07090c 98%),url('assets/daf-truck.jpg') 67% 45%/cover no-repeat}.hero-grid{grid-template-columns:1.15fr .85fr;min-height:250px}.brand h1{font-size:43px}.brand .tag{font-size:12px;margin-top:16px}.quote{font-size:9px;width:112px;margin-top:100px}.topbar .iconround{width:42px;height:42px}.monthbar{max-width:none}.monthbtn{height:56px}.monthbtn select{font-size:17px}.summary{grid-template-columns:repeat(2,1fr);gap:9px}.stat{min-height:92px;padding:13px}.stat b{font-size:20px}.trip{padding:14px}.trip-row{display:block}.cell{border-right:0;border-bottom:1px solid #202830;padding:0 0 12px;margin-bottom:12px}.cell:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}.trip-row .cell:nth-child(1){display:flex;flex-direction:row;justify-content:space-between;align-items:center}.trip-row .cell:nth-child(3),.trip-row .cell:nth-child(4),.trip-row .cell:nth-child(5){display:inline-flex;width:32%;vertical-align:top;border-bottom:0;margin:0;padding:0 4px}.trip-row .cell:nth-child(6){display:none}.route{white-space:normal}.metric-label{font-size:13px}.metric{font-size:13px}.payment .metric{font-size:14px}.add{font-size:19px;padding:16px}.footer-quote{font-size:9px}.bottom{font-size:11px}.nav b{font-size:21px}}
+
+/* ===== Mobile-first hero v4: truck is a real image, not a background ===== */
+.hero:before{background:
+  radial-gradient(circle at 82% 26%,rgba(221,153,69,.14),transparent 28%),
+  linear-gradient(180deg,#08121c 0%,#071019 58%,#07090c 100%);filter:none}
+.hero-truck{position:absolute;z-index:1;top:30px;right:-34px;width:64%;height:330px;overflow:hidden;pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 18%,#000 88%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,#000 18%,#000 88%,transparent 100%)}
+.hero-truck:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 58%,#07090c 98%),linear-gradient(90deg,#071019 0%,transparent 30%)}
+.hero-truck img{width:100%;height:100%;object-fit:cover;object-position:50% 31%;filter:contrast(1.08) saturate(.94) brightness(.9)}
+.hero-grid,.topbar{z-index:3}.brand{position:relative;z-index:4}.quote{position:relative;z-index:4}
+
+@media(max-width:610px){
+  .app{max-width:520px}
+  .hero{min-height:350px;padding:18px 16px 12px}
+  .hero-truck{top:36px;right:-46px;width:76%;height:292px;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 22%,#000 92%);mask-image:linear-gradient(90deg,transparent 0%,#000 22%,#000 92%)}
+  .hero-truck:after{background:linear-gradient(180deg,transparent 55%,#07090c 98%),linear-gradient(90deg,#071019 0%,rgba(7,16,25,.55) 20%,transparent 48%)}
+  .hero-truck img{object-position:50% 25%}
+  .topbar{position:relative;z-index:5}
+  .hero-grid{grid-template-columns:1fr;min-height:292px;position:relative}
+  .brand{align-self:end;padding-bottom:30px;max-width:54%}
+  .brand h1{font-size:42px;line-height:.88}
+  .brand .tag{font-size:10px;line-height:1.5;letter-spacing:.2em;margin-top:14px}
+  .quote{position:absolute;right:2px;bottom:36px;width:112px;margin:0;text-align:right;font-size:8px;line-height:1.65;letter-spacing:.14em}
+  .dashboard{margin-top:-8px;padding:0 12px 106px}
+  .monthbar{gap:7px;margin-bottom:12px}.month-arrow{width:48px;height:52px;border-radius:16px}.monthbtn{height:52px;border-radius:17px}.monthbtn select{font-size:16px}
+  .summary{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}.stat{min-height:88px;border-radius:17px;padding:12px}.stat .icon{font-size:21px;margin-bottom:6px}.stat b{font-size:19px}.stat span{font-size:11px;margin-top:5px}
+  .trip{border-radius:18px;padding:13px}.trip-no{font-size:18px}.date{font-size:12px}.route{font-size:16px}.route-sub{display:none}
+  .trip-row .cell:nth-child(3),.trip-row .cell:nth-child(4),.trip-row .cell:nth-child(5){width:33.333%;padding:0 3px}.metric-label{margin-bottom:5px}.metric{font-size:12px}.payment .metric{font-size:13px}
+  .add{border-radius:18px;font-size:16px;padding:16px 12px;margin-top:14px}.footer-quote{margin-top:22px;padding-top:18px}
+  .bottom{max-width:520px}.nav{font-size:10px;letter-spacing:.02em}.nav b{font-size:20px}
+}
+@media(max-width:390px){
+  .hero-truck{right:-54px;width:82%;height:282px}.brand{max-width:55%}.brand h1{font-size:38px}.quote{right:0;width:102px;font-size:7.5px}
+  .stat b{font-size:18px}.stat span{font-size:10px}.trip-row .cell:nth-child(3),.trip-row .cell:nth-child(4),.trip-row .cell:nth-child(5){width:32.8%}
+}
+
+</style>
 </head>
 <body>
 <div class="app">
 <section id="homeView" class="view active">
   <div class="hero">
-    <div class="hero-truck" aria-hidden="true"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt=""></div>
+    <div class="hero-truck" aria-hidden="true"><img src="assets/daf-truck.jpg" alt=""></div>
     <div class="topbar"><button class="iconround" aria-label="Меню">☰</button><button class="iconround" aria-label="Уведомления">♢</button></div>
     <div class="hero-grid">
       <div class="brand"><h1><span class="white">МОИ</span><span class="gold">РЕЙСЫ</span></h1><div class="tag">Движение —<br>это жизнь</div></div>
@@ -59,6 +139,35 @@
   <button class="nav" onclick="navTo(this,'settingsView')"><b>⚙</b>Настройки</button>
 </nav>
 </div>
-<script src="app.js"></script>
+<script>
+const KEY='trips_premium_v4';let trips=loadTrips(),currentId=null;const $=id=>document.getElementById(id);
+function n(v){return Number(v||0)}
+function money(v){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n(v))+' ₽'}
+function liters(v){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(n(v))+' л'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function loadTrips(){try{for(const k of [KEY,'trips_premium_v3','trips_premium_v2']){const d=JSON.parse(localStorage.getItem(k)||'null');if(Array.isArray(d))return d}const old=JSON.parse(localStorage.getItem('trips_v1')||'[]');if(!Array.isArray(old))return[];return old.map((t,i)=>({id:t.id||String(Date.now()+i),number:i+1,date:t.dateOut||t.dateIn||'',route:t.route||t.name||'',fuelLiters:n(t.fuelLiters||0),expenses:n(t.expenses||t.roads||0)+n(t.parking)+n(t.repair)+n(t.other),payment:n(t.payment||t.rate)+n(t.bonus)}))}catch(e){return[]}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(trips))}
+function monthKey(date){return date?date.slice(0,7):''}
+function monthLabel(k){if(!k)return'Без даты';const[y,m]=k.split('-').map(Number);return new Intl.DateTimeFormat('ru-RU',{month:'long',year:'numeric'}).format(new Date(y,m-1,1)).replace(/^./,c=>c.toUpperCase())}
+function allMonths(){const s=new Set(trips.map(t=>monthKey(t.date)).filter(Boolean));s.add(new Date().toISOString().slice(0,7));return[...s].sort().reverse()}
+function fillMonths(){const sel=$('monthSelect'),keep=sel.value,ms=allMonths();sel.innerHTML=ms.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');if(ms.includes(keep))sel.value=keep}
+function selectedTrips(){const k=$('monthSelect').value;return trips.filter(t=>monthKey(t.date)===k).sort((a,b)=>(n(a.number)-n(b.number))||String(a.date).localeCompare(String(b.date)))}
+function fmtDate(d){return d?new Intl.DateTimeFormat('ru-RU').format(new Date(d+'T00:00:00')):'—'}
+function render(){fillMonths();const rows=selectedTrips();$('sumTrips').textContent=rows.length;$('sumFuel').textContent=liters(rows.reduce((s,t)=>s+n(t.fuelLiters),0));$('sumExpenses').textContent=money(rows.reduce((s,t)=>s+n(t.expenses),0));$('sumPayment').textContent=money(rows.reduce((s,t)=>s+n(t.payment),0));
+$('tripList').innerHTML=rows.length?rows.map(t=>`<div class="trip" onclick="openTrip('${t.id}')"><div class="trip-row"><div class="cell"><div><div class="trip-no">№${esc(t.number||'—')}</div><div class="date">▣ ${fmtDate(t.date)}</div></div></div><div class="cell"><div class="route">⌖ ${esc(t.route||'Маршрут не указан')}</div><div class="route-sub">Маршрут рейса</div></div><div class="cell"><div class="metric-label">⛽</div><div class="metric">${liters(t.fuelLiters)}</div></div><div class="cell"><div class="metric-label">▣</div><div class="metric">${money(t.expenses)}</div></div><div class="cell payment"><div class="metric-label">◉</div><div class="metric">${money(t.payment)}</div></div><div class="cell more-wrap"><button class="more" aria-label="Открыть">›</button></div></div></div>`).join(''):`<div class="empty">В этом месяце пока нет рейсов.<br>Нажмите «Добавить рейс».</div>`;renderStats();renderFuel()}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));if(id==='homeView')render();window.scrollTo({top:0,behavior:'smooth'})}
+function navTo(btn,id){document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));btn.classList.add('active');showView(id)}
+function newTrip(){currentId=null;$('editorTitle').textContent='Новый рейс';$('deleteBtn').style.display='none';$('number').value=Math.max(0,...trips.map(t=>n(t.number)))+1;$('date').value=new Date().toISOString().slice(0,10);$('route').value='';$('fuelLiters').value='';$('expenses').value='';$('payment').value='';showView('editorView')}
+function openTrip(id){const t=trips.find(x=>x.id===id);if(!t)return;currentId=id;$('editorTitle').textContent='Рейс №'+(t.number||'');$('deleteBtn').style.display='block';$('number').value=t.number||'';$('date').value=t.date||'';$('route').value=t.route||'';$('fuelLiters').value=t.fuelLiters||'';$('expenses').value=t.expenses||'';$('payment').value=t.payment||'';showView('editorView')}
+function saveTrip(){const t={id:currentId||String(Date.now()),number:n($('number').value),date:$('date').value,route:$('route').value.trim(),fuelLiters:n($('fuelLiters').value),expenses:n($('expenses').value),payment:n($('payment').value)};if(!t.number)return alert('Укажите номер рейса');if(!t.date)return alert('Укажите дату');if(!t.route)return alert('Укажите маршрут');if(currentId)trips=trips.map(x=>x.id===currentId?t:x);else trips.push(t);persist();showView('homeView')}
+function deleteTrip(){if(currentId&&confirm('Удалить этот рейс?')){trips=trips.filter(x=>x.id!==currentId);persist();showView('homeView')}}
+function shiftMonth(delta){const sel=$('monthSelect');if(!sel.value)return;const[y,m]=sel.value.split('-').map(Number),d=new Date(y,m-1+delta,1),k=d.toISOString().slice(0,7);if(![...sel.options].some(o=>o.value===k))sel.add(new Option(monthLabel(k),k));sel.value=k;render()}
+function renderStats(){const rows=selectedTrips(),pay=rows.reduce((s,t)=>s+n(t.payment),0),exp=rows.reduce((s,t)=>s+n(t.expenses),0);$('statsBox').innerHTML=`<div class="chartline"><span>Рейсов</span><b>${rows.length}</b></div><div class="chartline"><span>Оплата за рейсы</span><b class="income">${money(pay)}</b></div><div class="chartline"><span>Расходы в пути</span><b>${money(exp)}</b></div><div class="chartline"><span>Заправлено</span><b>${liters(rows.reduce((s,t)=>s+n(t.fuelLiters),0))}</b></div><p class="note">Расходы отображаются отдельно и не вычитаются из оплаты за рейсы.</p>`}
+function renderFuel(){const rows=selectedTrips();$('fuelBox').innerHTML=rows.length?rows.map(t=>`<div class="chartline"><span>№${esc(t.number)} · ${esc(t.route)}</span><b>${liters(t.fuelLiters)}</b></div>`).join(''):`<div class="empty">Нет данных по заправкам за выбранный месяц.</div>`}
+function exportData(){const blob=new Blob([JSON.stringify(trips,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='moi-reisy-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function importData(ev){const f=ev.target.files?.[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;if(confirm('Заменить текущие данные данными из файла?')){trips=d;persist();render();alert('Данные восстановлены')}}catch(e){alert('Не удалось прочитать файл')}};r.readAsText(f)}
+function clearData(){if(confirm('Точно удалить все рейсы?')){trips=[];persist();render()}}
+fillMonths();render();
+</script>
 </body>
 </html>
