@@ -1,27 +1,30 @@
-const STORE='truck_trips_v2';
-let trips=JSON.parse(localStorage.getItem(STORE)||'[]');
-let currentId=null;
-const $=id=>document.getElementById(id);
-const fields=['name','status','from','to','dateOut','dateIn','rate','bonus','fuel','roads','parking','repair','other','notes'];
-const money=n=>new Intl.NumberFormat('ru-RU').format(Number(n||0))+' ₽';
-const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-const n=id=>Number($(id).value||0);
-function saveStore(){localStorage.setItem(STORE,JSON.stringify(trips));}
-function calcFrom(t){const expenses=+t.fuel||0;return {expenses:(+t.fuel||0)+(+t.roads||0)+(+t.parking||0)+(+t.repair||0)+(+t.other||0),income:(+t.rate||0)+(+t.bonus||0)}}
-function calcPreview(){const expenses=n('fuel')+n('roads')+n('parking')+n('repair')+n('other');const income=n('rate')+n('bonus');$('expensesPreview').textContent=money(expenses);$('incomePreview').textContent=money(income);$('netPreview').textContent=money(income-expenses);$('statusBadge').textContent=$('status').value;}
-function render(){
-  const q=$('searchInput').value.trim().toLowerCase();
-  const list=trips.filter(t=>`${t.name} ${t.from} ${t.to}`.toLowerCase().includes(q));
-  $('emptyState').classList.toggle('hidden',trips.length>0);
-  $('tripList').innerHTML=list.map(t=>{const c=calcFrom(t),net=c.income-c.expenses;const title=t.name||`${t.from||'Откуда'} → ${t.to||'Куда'}`;return `<article class="trip-card" data-id="${t.id}"><div class="trip-top"><div><h3>${esc(title)}</h3><div class="route">${esc(t.from||'—')} → ${esc(t.to||'—')}</div></div><div class="trip-money"><strong>${money(net)}</strong><span>чистыми</span></div></div><div class="trip-bottom"><span>${esc(t.dateOut||'Без даты')} ${t.dateIn?'→ '+esc(t.dateIn):''}</span><span class="badge ${t.status==='Завершён'?'done':''}">${esc(t.status||'В рейсе')}</span></div></article>`}).join('');
-  document.querySelectorAll('.trip-card').forEach(el=>el.addEventListener('click',()=>openTrip(el.dataset.id)));
-  const totals=trips.reduce((a,t)=>{const c=calcFrom(t);a.income+=c.income;a.exp+=c.expenses;return a},{income:0,exp:0});
-  $('sumTrips').textContent=trips.length;$('sumIncome').textContent=money(totals.income);$('sumExpenses').textContent=money(totals.exp);$('sumNet').textContent=money(totals.income-totals.exp);
-}
-function show(view){$('homeView').classList.toggle('active',view==='home');$('editView').classList.toggle('active',view==='edit');window.scrollTo({top:0,behavior:'smooth'});}
-function newTrip(){currentId=null;fields.forEach(f=>$(f).value=f==='status'?'В рейсе':'');$('editorTitle').textContent='Новый рейс';$('deleteBtn').classList.add('hidden');calcPreview();show('edit');}
-function openTrip(id){const t=trips.find(x=>x.id===id);if(!t)return;currentId=id;fields.forEach(f=>$(f).value=t[f]??(f==='status'?'В рейсе':''));$('editorTitle').textContent=t.name||'Рейс';$('deleteBtn').classList.remove('hidden');calcPreview();show('edit');}
-$('tripForm').addEventListener('submit',e=>{e.preventDefault();const t={id:currentId||crypto.randomUUID()};fields.forEach(f=>t[f]=$(f).value);if(!t.name)t.name=`${t.from||'Рейс'}${t.to?' — '+t.to:''}`;if(currentId)trips=trips.map(x=>x.id===currentId?t:x);else trips.unshift(t);saveStore();render();show('home');});
-$('deleteBtn').addEventListener('click',()=>{if(!currentId)return;if(confirm('Удалить этот рейс?')){trips=trips.filter(x=>x.id!==currentId);saveStore();render();show('home');}});
-$('backBtn').addEventListener('click',()=>show('home'));$('addTripMain').addEventListener('click',newTrip);$('addTripTop').addEventListener('click',newTrip);$('searchInput').addEventListener('input',render);fields.filter(f=>['rate','bonus','fuel','roads','parking','repair','other','status'].includes(f)).forEach(f=>$(f).addEventListener('input',calcPreview));$('status').addEventListener('change',calcPreview);
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}render();
+const KEY='trips_premium_v4';let trips=loadTrips(),currentId=null;const $=id=>document.getElementById(id);
+function n(v){return Number(v||0)}
+function money(v){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n(v))+' ₽'}
+function liters(v){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(n(v))+' л'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function loadTrips(){try{for(const k of [KEY,'trips_premium_v3','trips_premium_v2']){const d=JSON.parse(localStorage.getItem(k)||'null');if(Array.isArray(d))return d}const old=JSON.parse(localStorage.getItem('trips_v1')||'[]');if(!Array.isArray(old))return[];return old.map((t,i)=>({id:t.id||String(Date.now()+i),number:i+1,date:t.dateOut||t.dateIn||'',route:t.route||t.name||'',fuelLiters:n(t.fuelLiters||0),expenses:n(t.expenses||t.roads||0)+n(t.parking)+n(t.repair)+n(t.other),payment:n(t.payment||t.rate)+n(t.bonus)}))}catch(e){return[]}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(trips))}
+function monthKey(date){return date?date.slice(0,7):''}
+function monthLabel(k){if(!k)return'Без даты';const[y,m]=k.split('-').map(Number);return new Intl.DateTimeFormat('ru-RU',{month:'long',year:'numeric'}).format(new Date(y,m-1,1)).replace(/^./,c=>c.toUpperCase())}
+function allMonths(){const s=new Set(trips.map(t=>monthKey(t.date)).filter(Boolean));s.add(new Date().toISOString().slice(0,7));return[...s].sort().reverse()}
+function fillMonths(){const sel=$('monthSelect'),keep=sel.value,ms=allMonths();sel.innerHTML=ms.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');if(ms.includes(keep))sel.value=keep}
+function selectedTrips(){const k=$('monthSelect').value;return trips.filter(t=>monthKey(t.date)===k).sort((a,b)=>(n(a.number)-n(b.number))||String(a.date).localeCompare(String(b.date)))}
+function fmtDate(d){return d?new Intl.DateTimeFormat('ru-RU').format(new Date(d+'T00:00:00')):'—'}
+function render(){fillMonths();const rows=selectedTrips();$('sumTrips').textContent=rows.length;$('sumFuel').textContent=liters(rows.reduce((s,t)=>s+n(t.fuelLiters),0));$('sumExpenses').textContent=money(rows.reduce((s,t)=>s+n(t.expenses),0));$('sumPayment').textContent=money(rows.reduce((s,t)=>s+n(t.payment),0));
+$('tripList').innerHTML=rows.length?rows.map(t=>`<div class="trip" onclick="openTrip('${t.id}')"><div class="trip-row"><div class="cell"><div><div class="trip-no">№${esc(t.number||'—')}</div><div class="date">▣ ${fmtDate(t.date)}</div></div></div><div class="cell"><div class="route">⌖ ${esc(t.route||'Маршрут не указан')}</div><div class="route-sub">Маршрут рейса</div></div><div class="cell"><div class="metric-label">⛽</div><div class="metric">${liters(t.fuelLiters)}</div></div><div class="cell"><div class="metric-label">▣</div><div class="metric">${money(t.expenses)}</div></div><div class="cell payment"><div class="metric-label">◉</div><div class="metric">${money(t.payment)}</div></div><div class="cell more-wrap"><button class="more" aria-label="Открыть">›</button></div></div></div>`).join(''):`<div class="empty">В этом месяце пока нет рейсов.<br>Нажмите «Добавить рейс».</div>`;renderStats();renderFuel()}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));if(id==='homeView')render();window.scrollTo({top:0,behavior:'smooth'})}
+function navTo(btn,id){document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));btn.classList.add('active');showView(id)}
+function newTrip(){currentId=null;$('editorTitle').textContent='Новый рейс';$('deleteBtn').style.display='none';$('number').value=Math.max(0,...trips.map(t=>n(t.number)))+1;$('date').value=new Date().toISOString().slice(0,10);$('route').value='';$('fuelLiters').value='';$('expenses').value='';$('payment').value='';showView('editorView')}
+function openTrip(id){const t=trips.find(x=>x.id===id);if(!t)return;currentId=id;$('editorTitle').textContent='Рейс №'+(t.number||'');$('deleteBtn').style.display='block';$('number').value=t.number||'';$('date').value=t.date||'';$('route').value=t.route||'';$('fuelLiters').value=t.fuelLiters||'';$('expenses').value=t.expenses||'';$('payment').value=t.payment||'';showView('editorView')}
+function saveTrip(){const t={id:currentId||String(Date.now()),number:n($('number').value),date:$('date').value,route:$('route').value.trim(),fuelLiters:n($('fuelLiters').value),expenses:n($('expenses').value),payment:n($('payment').value)};if(!t.number)return alert('Укажите номер рейса');if(!t.date)return alert('Укажите дату');if(!t.route)return alert('Укажите маршрут');if(currentId)trips=trips.map(x=>x.id===currentId?t:x);else trips.push(t);persist();showView('homeView')}
+function deleteTrip(){if(currentId&&confirm('Удалить этот рейс?')){trips=trips.filter(x=>x.id!==currentId);persist();showView('homeView')}}
+function shiftMonth(delta){const sel=$('monthSelect');if(!sel.value)return;const[y,m]=sel.value.split('-').map(Number),d=new Date(y,m-1+delta,1),k=d.toISOString().slice(0,7);if(![...sel.options].some(o=>o.value===k))sel.add(new Option(monthLabel(k),k));sel.value=k;render()}
+function renderStats(){const rows=selectedTrips(),pay=rows.reduce((s,t)=>s+n(t.payment),0),exp=rows.reduce((s,t)=>s+n(t.expenses),0);$('statsBox').innerHTML=`<div class="chartline"><span>Рейсов</span><b>${rows.length}</b></div><div class="chartline"><span>Оплата за рейсы</span><b class="income">${money(pay)}</b></div><div class="chartline"><span>Расходы в пути</span><b>${money(exp)}</b></div><div class="chartline"><span>Заправлено</span><b>${liters(rows.reduce((s,t)=>s+n(t.fuelLiters),0))}</b></div><p class="note">Расходы отображаются отдельно и не вычитаются из оплаты за рейсы.</p>`}
+function renderFuel(){const rows=selectedTrips();$('fuelBox').innerHTML=rows.length?rows.map(t=>`<div class="chartline"><span>№${esc(t.number)} · ${esc(t.route)}</span><b>${liters(t.fuelLiters)}</b></div>`).join(''):`<div class="empty">Нет данных по заправкам за выбранный месяц.</div>`}
+function exportData(){const blob=new Blob([JSON.stringify(trips,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='moi-reisy-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function importData(ev){const f=ev.target.files?.[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;if(confirm('Заменить текущие данные данными из файла?')){trips=d;persist();render();alert('Данные восстановлены')}}catch(e){alert('Не удалось прочитать файл')}};r.readAsText(f)}
+function clearData(){if(confirm('Точно удалить все рейсы?')){trips=[];persist();render()}}
+fillMonths();render();
+
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{})); }

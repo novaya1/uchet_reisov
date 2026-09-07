@@ -1,102 +1,64 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#245b45" />
-  <title>Учёт рейсов</title>
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#070a0d" />
+<title>Мои рейсы</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.webmanifest">
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div>
-        <div class="eyebrow">Личный журнал водителя</div>
-        <h1>Учёт рейсов</h1>
-      </div>
-      <button id="addTripTop" class="icon-btn" aria-label="Добавить рейс">＋</button>
-    </header>
-
-    <main>
-      <section id="homeView" class="view active">
-        <div class="summary-grid">
-          <div class="summary-card"><span>Рейсов</span><strong id="sumTrips">0</strong></div>
-          <div class="summary-card"><span>Доход</span><strong id="sumIncome">0 ₽</strong></div>
-          <div class="summary-card"><span>Расходы</span><strong id="sumExpenses">0 ₽</strong></div>
-          <div class="summary-card accent"><span>Чистыми</span><strong id="sumNet">0 ₽</strong></div>
-        </div>
-
-        <button id="addTripMain" class="primary-btn">＋ Новый рейс</button>
-
-        <div class="section-head">
-          <h2>Мои рейсы</h2>
-          <input id="searchInput" class="search" placeholder="Поиск по маршруту" />
-        </div>
-
-        <div id="tripList" class="trip-list"></div>
-        <div id="emptyState" class="empty-state">
-          <div class="truck">🚛</div>
-          <h3>Рейсов пока нет</h3>
-          <p>Нажмите «Новый рейс» и добавьте первый маршрут.</p>
-        </div>
-      </section>
-
-      <section id="editView" class="view">
-        <button id="backBtn" class="back-btn">← Назад к рейсам</button>
-        <div class="editor-head">
-          <div>
-            <div class="eyebrow">Карточка рейса</div>
-            <h2 id="editorTitle">Новый рейс</h2>
-          </div>
-          <span id="statusBadge" class="status-badge">В рейсе</span>
-        </div>
-
-        <form id="tripForm">
-          <div class="panel">
-            <h3>Основное</h3>
-            <div class="form-grid">
-              <label>Название рейса<input id="name" placeholder="Например, Уфа — Москва" /></label>
-              <label>Статус<select id="status"><option value="В рейсе">В рейсе</option><option value="Завершён">Завершён</option></select></label>
-              <label>Откуда<input id="from" placeholder="Уфа" /></label>
-              <label>Куда<input id="to" placeholder="Москва" /></label>
-              <label>Дата выезда<input id="dateOut" type="date" /></label>
-              <label>Дата приезда<input id="dateIn" type="date" /></label>
-              <label>Ставка, ₽<input id="rate" type="number" inputmode="decimal" placeholder="0" /></label>
-              <label>Доплата / бонус, ₽<input id="bonus" type="number" inputmode="decimal" placeholder="0" /></label>
-            </div>
-          </div>
-
-          <div class="panel">
-            <h3>Расходы</h3>
-            <div class="form-grid">
-              <label>Топливо, ₽<input id="fuel" type="number" inputmode="decimal" placeholder="0" /></label>
-              <label>Платные дороги, ₽<input id="roads" type="number" inputmode="decimal" placeholder="0" /></label>
-              <label>Стоянка, ₽<input id="parking" type="number" inputmode="decimal" placeholder="0" /></label>
-              <label>Ремонт / сервис, ₽<input id="repair" type="number" inputmode="decimal" placeholder="0" /></label>
-              <label>Прочие расходы, ₽<input id="other" type="number" inputmode="decimal" placeholder="0" /></label>
-            </div>
-            <div class="totals">
-              <div><span>Всего расходов</span><strong id="expensesPreview">0 ₽</strong></div>
-              <div><span>Сумма за рейс</span><strong id="incomePreview">0 ₽</strong></div>
-              <div class="net"><span>Чистыми</span><strong id="netPreview">0 ₽</strong></div>
-            </div>
-          </div>
-
-          <div class="panel">
-            <h3>Заметки</h3>
-            <textarea id="notes" placeholder="Номер груза, контакты, пометки, что нужно запомнить..."></textarea>
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="primary-btn">Сохранить рейс</button>
-            <button type="button" id="deleteBtn" class="danger-btn hidden">Удалить рейс</button>
-          </div>
-        </form>
-      </section>
-    </main>
+<div class="app">
+<section id="homeView" class="view active">
+  <div class="hero">
+    <div class="hero-truck" aria-hidden="true"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt=""></div>
+    <div class="topbar"><button class="iconround" aria-label="Меню">☰</button><button class="iconround" aria-label="Уведомления">♢</button></div>
+    <div class="hero-grid">
+      <div class="brand"><h1><span class="white">МОИ</span><span class="gold">РЕЙСЫ</span></h1><div class="tag">Движение —<br>это жизнь</div></div>
+      <div class="quote">Большие<br>расстояния<br>делают<br>сильнее</div>
+    </div>
   </div>
+  <div class="dashboard">
+    <div class="monthbar"><button class="month-arrow" onclick="shiftMonth(-1)">‹</button><div class="monthbtn"><select id="monthSelect" onchange="render()"></select></div><button class="month-arrow" onclick="shiftMonth(1)">›</button></div>
+    <div class="summary">
+      <div class="stat"><div class="icon">⌁</div><b id="sumTrips">0</b><span>Рейсов</span></div>
+      <div class="stat"><div class="icon">⛽</div><b id="sumFuel">0 л</b><span>Заправлено</span></div>
+      <div class="stat"><div class="icon">▣</div><b id="sumExpenses">0 ₽</b><span>Расходы в пути</span></div>
+      <div class="stat green"><div class="icon">◉</div><b id="sumPayment">0 ₽</b><span>Оплата за рейсы</span></div>
+    </div>
+    <div id="tripList" class="trip-list"></div>
+    <button class="add" onclick="newTrip()">＋&nbsp;&nbsp;Добавить рейс</button>
+    <div class="footer-quote"><span>Дороги<br>объединяют людей</span><span style="text-align:right">Километры<br>к новым возможностям</span></div>
+  </div>
+</section>
 
-  <script src="app.js"></script>
+<section id="editorView" class="view"><div class="inner"><div class="topline"><button class="back" onclick="showView('homeView')">←</button><h2 id="editorTitle">Новый рейс</h2></div><div class="form-card">
+  <div class="field"><label>Номер рейса</label><input id="number" type="number" inputmode="numeric" min="1"></div>
+  <div class="field"><label>Дата</label><input id="date" type="date"></div>
+  <div class="field"><label>Маршрут</label><input id="route" placeholder="Например: Уфа → Москва"></div>
+  <div class="field"><label>Заправка, литры</label><input id="fuelLiters" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0"></div>
+  <div class="field"><label>Расходы в пути, ₽</label><input id="expenses" type="number" inputmode="decimal" min="0" step="1" placeholder="0"></div>
+  <div class="field"><label>Оплата за рейс, ₽</label><input id="payment" type="number" inputmode="decimal" min="0" step="1" placeholder="0"></div>
+  <div class="actions"><button class="save" onclick="saveTrip()">Сохранить рейс</button><button id="deleteBtn" class="delete" onclick="deleteTrip()" style="display:none">Удалить</button></div>
+  <p class="note">Расходы в пути показываются отдельно и не уменьшают доход. Доход считается только по полю «Оплата за рейс».</p>
+</div></div></section>
+
+<section id="statsView" class="view"><div class="inner"><div class="topline"><h2>Статистика</h2></div><div class="form-card" id="statsBox"></div></div></section>
+<section id="fuelView" class="view"><div class="inner"><div class="topline"><h2>Заправки</h2></div><div class="form-card" id="fuelBox"></div></div></section>
+<section id="settingsView" class="view"><div class="inner"><div class="topline"><h2>Настройки</h2></div>
+  <div class="settings-card"><h3>Резервная копия</h3><p>Сохранить все рейсы отдельным JSON-файлом.</p><button class="secondary" onclick="exportData()">Скачать данные</button></div>
+  <div class="settings-card"><h3>Восстановить данные</h3><p>Загрузить ранее сохранённый JSON-файл.</p><input id="importFile" type="file" accept="application/json" style="display:none" onchange="importData(event)"><button class="secondary" onclick="document.getElementById('importFile').click()">Загрузить данные</button></div>
+  <div class="settings-card"><h3>Очистить приложение</h3><p>Удалить все рейсы на этом устройстве.</p><button class="secondary danger" onclick="clearData()">Удалить все рейсы</button></div>
+</div></section>
+
+<nav class="bottom">
+  <button class="nav active" onclick="navTo(this,'homeView')"><b>⌂</b>Главная</button>
+  <button class="nav" onclick="navTo(this,'statsView')"><b>▥</b>Статистика</button>
+  <button class="nav" onclick="navTo(this,'fuelView')"><b>⛽</b>Заправки</button>
+  <button class="nav" onclick="navTo(this,'settingsView')"><b>⚙</b>Настройки</button>
+</nav>
+</div>
+<script src="app.js"></script>
 </body>
 </html>

@@ -1,9 +1,10 @@
 {
-  "name": "Учёт рейсов",
+  "name": "Мои рейсы",
   "short_name": "Рейсы",
-  "start_url": "./",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#245b45",
+  "background_color": "#07090c",
+  "theme_color": "#070a0d",
   "lang": "ru"
 }
